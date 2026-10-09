@@ -10,7 +10,7 @@
 
     const root = document.getElementById("doom");
     const GAME_DIR = "/game/";
-    const ENGINE_ARGS = ["-iwad", "doom1.wad", "-window", "-nogui", "-config", "default.cfg"];
+    const ENGINE_ARGS = ["-iwad", "doom1.wad", "-window", "-nogui", "-nomusic", "-config", "default.cfg"];
 
     const isTouch = window.matchMedia("(pointer: coarse)").matches;
     const isEmbed = window.self !== window.top;
@@ -28,7 +28,9 @@
             }
         };
     }
-    const resumeAudio = () => audioContexts.forEach((ctx) => ctx.state === "suspended" && ctx.resume());
+    let muted = false;
+    const resumeAudio = () =>
+        !muted && audioContexts.forEach((ctx) => ctx.state === "suspended" && ctx.resume().catch(() => {}));
 
     // --- DOM ---
     root.innerHTML = `
@@ -178,12 +180,11 @@
 
     // --- corner buttons ---
     const muteBtn = $("[data-mute]");
-    let muted = false;
     muteBtn.addEventListener("click", (e) => {
         e.stopPropagation();
         muted = !muted;
         muteBtn.textContent = muted ? "🔇" : "🔊";
-        audioContexts.forEach((ctx) => (muted ? ctx.suspend() : ctx.resume()));
+        audioContexts.forEach((ctx) => (muted ? ctx.suspend() : ctx.resume()).catch(() => {}));
         canvas.focus();
     });
 

@@ -100,7 +100,7 @@
 
 #include <inttypes.h>
 
-#if defined(__cplusplus) || defined(__bool_true_false_are_defined)
+#if defined(__cplusplus)
 
 // Use builtin bool type with C++.
 
@@ -108,11 +108,13 @@ typedef bool boolean;
 
 #else
 
-typedef enum 
-{
-    false, 
-    true
-} boolean;
+// boolean must be the same size in every translation unit. Newer Emscripten's
+// <emscripten/html5.h> pulls in <stdbool.h>, so the old "use bool if stdbool was
+// included, else an enum" switch gave 1-byte booleans in some files and 4-byte ones
+// in others, silently corrupting shared structs (player_t etc.). Always use an
+// int-sized boolean (what the enum was), with true/false from <stdbool.h>.
+#include <stdbool.h>
+typedef int boolean;
 
 #endif
 
