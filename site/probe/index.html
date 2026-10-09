@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>iframe probe</title>
+        <meta name="robots" content="noindex" />
+        <!-- Phase 0: tweet this URL to check that X renders our player card as an iframe,
+             and see what the iframe is allowed to do. -->
+        <meta name="twitter:card" content="player" />
+        <meta name="twitter:title" content="iframe probe" />
+        <meta name="twitter:description" content="Testing what runs inside an X player card." />
+        <meta name="twitter:image" content="__SITE_URL__/poster.png" />
+        <meta name="twitter:player" content="__SITE_URL__/probe/frame/" />
+        <meta name="twitter:player:width" content="640" />
+        <meta name="twitter:player:height" content="480" />
+        <style>
+            html, body { margin: 0; height: 100%; background: #111; }
+            iframe { display: block; width: 640px; height: 480px; max-width: 100%; margin: 24px auto; border: 1px solid #333; }
+        </style>
+    </head>
+    <body>
+        <iframe src="/probe/frame/" allow="autoplay; fullscreen; gamepad"></iframe>
+    </body>
+</html>

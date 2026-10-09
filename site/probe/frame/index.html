@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="robots" content="noindex" />
+        <title>iframe probe</title>
+        <style>
+            html, body { margin: 0; height: 100%; overflow: hidden; background: #000; color: #0f0; font: 12px/1.45 ui-monospace, Consolas, monospace; }
+            canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+            pre { position: absolute; inset: 0; margin: 0; padding: 10px; white-space: pre-wrap; text-shadow: 0 1px 2px #000; }
+            .bad { color: #f55; }
+        </style>
+    </head>
+    <body tabindex="0">
+        <canvas id="c"></canvas>
+        <pre id="out">click me, then press keys…</pre>
+        <script>
+            // Animated background proves JS + rAF run; the readout shows what the X iframe permits.
+            const c = document.getElementById("c");
+            const g = c.getContext("2d");
+            let t = 0;
+            (function frame() {
+                c.width = innerWidth;
+                c.height = innerHeight;
+                t += 0.02;
+                for (let i = 0; i < 24; i++) {
+                    g.fillStyle = `hsl(${(i * 15 + t * 60) % 360} 80% 25%)`;
+                    g.fillRect(0, (i * c.height) / 24, c.width * (0.5 + 0.5 * Math.sin(t + i / 3)), c.height / 24 + 1);
+                }
+                requestAnimationFrame(frame);
+            })();
+
+            const rows = {};
+            const out = document.getElementById("out");
+            const set = (k, v) => {
+                rows[k] = v;
+                out.innerHTML = Object.entries(rows)
+                    .map(([k, v]) => `${k.padEnd(18)} ${String(v).startsWith("NO") ? `<span class="bad">${v}</span>` : v}`)
+                    .join("\n");
+            };
+            const tryIt = (fn) => {
+                try {
+                    return fn();
+                } catch (e) {
+                    return "NO (" + e.name + ")";
+                }
+            };
+
+            set("framed", window.self !== window.top ? "yes" : "no (top-level)");
+            set("referrer", document.referrer || "(none)");
+            set("ancestorOrigins", tryIt(() => [...(location.ancestorOrigins || [])].join(", ") || "n/a"));
+            set("viewport", `${innerWidth}x${innerHeight} @${devicePixelRatio}x`);
+            set("userAgent", navigator.userAgent.slice(0, 90));
+            set("localStorage", tryIt(() => (localStorage.setItem("p", "1"), "yes")));
+            set("indexedDB", tryIt(() => (indexedDB ? "present" : "NO")));
+            set("WebAssembly", typeof WebAssembly === "object" ? "yes" : "NO");
+            set("fullscreenEnabled", document.fullscreenEnabled || document.webkitFullscreenEnabled ? "yes" : "NO");
+            set("pointerLock", "requestPointerLock" in document.body ? "api present (click to test)" : "NO");
+            set("gamepad", tryIt(() => (navigator.getGamepads(), "allowed")));
+            set("audio", "click to test");
+            set("lastKey", "(none)");
+            set("focus", document.hasFocus() ? "yes" : "no");
+
+            addEventListener("focus", () => set("focus", "yes"));
+            addEventListener("blur", () => set("focus", "no (blurred)"));
+            addEventListener("keydown", (e) => {
+                set("lastKey", `${e.code} keyCode=${e.keyCode}`);
+                e.preventDefault();
+            });
+            addEventListener("click", async () => {
+                document.body.focus();
+                try {
+                    const ctx = new AudioContext();
+                    const o = ctx.createOscillator();
+                    o.frequency.value = 440;
+                    o.connect(ctx.destination);
+                    o.start();
+                    o.stop(ctx.currentTime + 0.15);
+                    await ctx.resume();
+                    set("audio", ctx.state === "running" ? "yes (beep)" : "NO (" + ctx.state + ")");
+                } catch (e) {
+                    set("audio", "NO (" + e.name + ")");
+                }
+                try {
+                    await document.body.requestPointerLock();
+                    set("pointerLock", document.pointerLockElement ? "yes" : "NO");
+                    document.exitPointerLock();
+                } catch (e) {
+                    set("pointerLock", "NO (" + e.name + ")");
+                }
+            });
+        </script>
+    </body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>DOOM in a tweet</title>
+        <meta name="description" content="The original 1993 DOOM shareware episode, compiled to WebAssembly, playable right inside a post on X." />
+
+        <!-- X player card: X renders twitter:player as an iframe inside the tweet. -->
+        <meta name="twitter:card" content="player" />
+        <meta name="twitter:title" content="DOOM, playable inside this tweet" />
+        <meta name="twitter:description" content="The 1993 shareware episode in WebAssembly. Click to play: WASD/arrows to move, Space/Ctrl to fire, E to use." />
+        <meta name="twitter:image" content="__SITE_URL__/poster.png" />
+        <meta name="twitter:image:alt" content="DOOM title screen" />
+        <meta name="twitter:player" content="__SITE_URL__/embed/" />
+        <meta name="twitter:player:width" content="640" />
+        <meta name="twitter:player:height" content="480" />
+
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="__SITE_URL__/" />
+        <meta property="og:title" content="DOOM in a tweet" />
+        <meta property="og:description" content="The 1993 DOOM shareware episode in WebAssembly, playable inside a tweet." />
+        <meta property="og:image" content="__SITE_URL__/poster.png" />
+
+        <link rel="stylesheet" href="/player.css" />
+        <style>
+            * {
+                box-sizing: border-box;
+            }
+            html,
+            body {
+                margin: 0;
+                background: #0b0b0b;
+                color: #ddd;
+                font: 14px/1.5 ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+            }
+            main {
+                max-width: 1000px;
+                margin: 0 auto;
+                padding: 20px 16px 40px;
+            }
+            h1 {
+                margin: 0 0 14px;
+                font-size: 18px;
+                letter-spacing: 0.15em;
+                text-transform: uppercase;
+                color: #e33;
+            }
+            .stage {
+                width: 100%;
+                aspect-ratio: 4 / 3;
+                max-height: calc(100vh - 140px);
+                margin: 0 auto;
+                border: 1px solid #222;
+            }
+            .keys {
+                margin: 14px 0 0;
+                color: #999;
+            }
+            kbd {
+                padding: 1px 6px;
+                border: 1px solid #444;
+                border-bottom-width: 2px;
+                border-radius: 4px;
+                color: #eee;
+                font: inherit;
+            }
+            footer {
+                margin-top: 28px;
+                color: #666;
+                font-size: 12px;
+            }
+            footer a {
+                color: #999;
+            }
+        </style>
+    </head>
+    <body>
+        <main>
+            <h1>DOOM in a tweet</h1>
+            <div class="stage"><div id="doom" class="doom-player" data-poster="/poster.png"></div></div>
+            <p class="keys">
+                <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> / <kbd>↑</kbd><kbd>←</kbd><kbd>↓</kbd><kbd>→</kbd> move ·
+                <kbd>Space</kbd>/<kbd>Ctrl</kbd>/click fire · <kbd>E</kbd> use · <kbd>Shift</kbd> run ·
+                <kbd>Alt</kbd> strafe · <kbd>1</kbd>–<kbd>7</kbd> weapons · <kbd>Esc</kbd> menu
+            </p>
+            <footer>
+                DOOM shareware episode © 1993 id Software, distributed unmodified (<code>doom1.wad</code> v1.9). Engine:
+                <a href="https://github.com/cloudflare/doom-wasm">Cloudflare's doom-wasm</a> fork of
+                <a href="https://www.chocolate-doom.org/">Chocolate Doom</a>, GNU GPL v2.
+                <a href="__SOURCE_URL__">Source for this site</a>. Not affiliated with id Software or X.
+            </footer>
+        </main>
+        <script src="/player.js"></script>
+    </body>
+</html>

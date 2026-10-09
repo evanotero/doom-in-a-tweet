@@ -1,0 +1,198 @@
+/* Shared by the embed (iframe) page and the share page. */
+
+.doom-player {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    overflow: hidden;
+    color: #fff;
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: none;
+}
+
+/* The engine renders 640x480 (4:3). JS sizes the canvas to fit; this is the fallback. */
+.doom-player canvas {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    image-rendering: pixelated;
+    outline: none;
+    display: block;
+}
+
+.doom-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.55) center / contain no-repeat;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.doom-overlay[hidden] {
+    display: none;
+}
+
+.doom-overlay.is-start {
+    background-color: #000;
+    background-image: var(--poster);
+}
+
+.doom-overlay.is-start::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.7));
+}
+
+.doom-overlay > * {
+    position: relative;
+}
+
+.doom-play-btn {
+    width: 84px;
+    height: 84px;
+    border-radius: 50%;
+    border: 3px solid #fff;
+    background: rgba(170, 0, 0, 0.85);
+    display: grid;
+    place-items: center;
+    box-shadow: 0 0 32px rgba(255, 40, 0, 0.6);
+    transition: transform 0.12s ease;
+}
+
+.doom-overlay:hover .doom-play-btn {
+    transform: scale(1.08);
+}
+
+.doom-play-btn::after {
+    content: "";
+    margin-left: 8px;
+    border-style: solid;
+    border-width: 18px 0 18px 30px;
+    border-color: transparent transparent transparent #fff;
+}
+
+.doom-label {
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    text-shadow: 0 2px 6px #000;
+}
+
+.doom-sublabel {
+    font-size: 11px;
+    opacity: 0.8;
+    letter-spacing: 0.05em;
+    text-shadow: 0 1px 4px #000;
+}
+
+.doom-progress {
+    width: min(60%, 280px);
+    height: 8px;
+    border: 2px solid #fff;
+    padding: 1px;
+}
+
+.doom-progress > div {
+    height: 100%;
+    width: 0%;
+    background: #c00;
+    transition: width 0.1s linear;
+}
+
+/* Corner buttons: open full game / fullscreen / mute */
+.doom-corner {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    display: flex;
+    gap: 6px;
+    z-index: 20;
+    opacity: 0.35;
+    transition: opacity 0.15s;
+}
+
+.doom-player:hover .doom-corner {
+    opacity: 1;
+}
+
+.doom-corner a,
+.doom-corner button {
+    all: unset;
+    cursor: pointer;
+    font-size: 12px;
+    line-height: 1;
+    padding: 6px 8px;
+    background: rgba(0, 0, 0, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 4px;
+    color: #fff;
+}
+
+.doom-corner [hidden] {
+    display: none;
+}
+
+/* Touch controls (shown only on coarse pointers once the game is running) */
+.doom-touch {
+    position: absolute;
+    inset: 0;
+    z-index: 15;
+    pointer-events: none;
+    display: none;
+}
+
+.doom-player.is-touch.is-running .doom-touch {
+    display: block;
+}
+
+.doom-touch button {
+    all: unset;
+    pointer-events: auto;
+    position: absolute;
+    display: grid;
+    place-items: center;
+    background: rgba(255, 255, 255, 0.14);
+    border: 2px solid rgba(255, 255, 255, 0.35);
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 12px;
+    font-weight: 700;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.doom-touch button.is-down {
+    background: rgba(255, 60, 30, 0.45);
+}
+
+.doom-touch .dpad {
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
+}
+
+.doom-touch .act {
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+}
+
+.doom-touch .sys {
+    height: 24px;
+    padding: 0 10px;
+    border-radius: 12px;
+    font-size: 10px;
+}

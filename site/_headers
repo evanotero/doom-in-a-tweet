@@ -1,0 +1,16 @@
+# Cloudflare Pages header rules.
+# The whole site is framable only by X, so the share page can't be framed elsewhere,
+# and /embed/ (the twitter:player iframe) works inside tweets.
+
+/*
+  Content-Security-Policy: frame-ancestors 'self' https://x.com https://*.x.com https://twitter.com https://*.twitter.com
+  Cross-Origin-Resource-Policy: cross-origin
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Content-Type-Options: nosniff
+
+# Everything in /game/ is requested with ?v=<hash> from /manifest.json, so it can be cached hard.
+/game/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/manifest.json
+  Cache-Control: no-cache
