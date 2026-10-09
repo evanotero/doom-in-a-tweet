@@ -35,4 +35,6 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          # First run creates the Pages project; later runs just deploy.
+          preCommands: npx wrangler pages project create ${{ vars.PAGES_PROJECT || 'doom-in-a-tweet' }} --production-branch=main || true
           command: pages deploy dist --project-name=${{ vars.PAGES_PROJECT || 'doom-in-a-tweet' }} --branch=main
