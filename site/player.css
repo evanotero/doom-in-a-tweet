@@ -41,8 +41,8 @@
     z-index: 10;
 }
 
-.doom-overlay[hidden] {
-    display: none;
+.doom-player [hidden] {
+    display: none !important;
 }
 
 .doom-overlay.is-start {

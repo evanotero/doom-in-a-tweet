@@ -244,17 +244,25 @@
 
         try {
             const manifest = await (await fetch("/manifest.json", { cache: "no-cache" })).json();
-            const total = manifest.files.wasm.size + manifest.files.wad.size;
             let loaded = 0;
+            const v = `?v=${manifest.version}`;
+            // The WAD is shipped gzipped (4.2 MB -> 1.8 MB) since Cloudflare won't compress it
+            // for us. Browsers without DecompressionStream get the plain file instead.
+            const gz = typeof DecompressionStream === "function";
+            const wadFile = gz ? manifest.files.wadgz : manifest.files.wad;
+            const total = manifest.files.wasm.size + wadFile.size;
             const tick = (n) => {
                 loaded += n;
                 progressBar.style.width = `${Math.min(100, (loaded / total) * 100).toFixed(1)}%`;
             };
-            const v = `?v=${manifest.version}`;
-            const [wasmBinary, wad] = await Promise.all([
+            let [wasmBinary, wad] = await Promise.all([
                 fetchWithProgress(GAME_DIR + "doom.wasm" + v, manifest.files.wasm.size, tick),
-                fetchWithProgress(GAME_DIR + "doom1.wad" + v, manifest.files.wad.size, tick),
+                fetchWithProgress(GAME_DIR + wadFile.name + v, wadFile.size, tick),
             ]);
+            if (wad[0] === 0x1f && wad[1] === 0x8b) {
+                const stream = new Blob([wad]).stream().pipeThrough(new DecompressionStream("gzip"));
+                wad = new Uint8Array(await new Response(stream).arrayBuffer());
+            }
             const cfg = await (await fetch(GAME_DIR + "default.cfg" + v)).text();
 
             label.textContent = "Starting…";

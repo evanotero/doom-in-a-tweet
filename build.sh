@@ -74,6 +74,7 @@ mkdir -p "$DIST/game"
 echo "==> Assembling site"
 cp -r "$ROOT/site/." "$DIST/"
 cp "$ROOT/wad/doom1.wad" "$DIST/game/doom1.wad"
+gzip -9 -n -c "$ROOT/wad/doom1.wad" > "$DIST/game/doom1.wad.gz"
 
 # Absolute URLs are required in the card meta tags.
 SITE_URL="${SITE_URL:-https://doom.evanotero.com}"
@@ -91,7 +92,8 @@ cat > "$DIST/manifest.json" <<EOF
   "version": "$VERSION",
   "files": {
     "wasm": { "size": $(size "$DIST/game/doom.wasm") },
-    "wad": { "size": $(size "$DIST/game/doom1.wad") }
+    "wad": { "name": "doom1.wad", "size": $(size "$DIST/game/doom1.wad") },
+    "wadgz": { "name": "doom1.wad.gz", "size": $(size "$DIST/game/doom1.wad.gz") }
   }
 }
 EOF
