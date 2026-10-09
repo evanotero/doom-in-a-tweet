@@ -10,9 +10,11 @@
 
     const root = document.getElementById("doom");
     const GAME_DIR = "/game/";
-    const ENGINE_ARGS = ["-iwad", "doom1.wad", "-window", "-nogui", "-nomusic", "-config", "default.cfg"];
+    // -warp 1 1 -skill 3: drop straight into E1M1 on Hurt Me Plenty (Esc still opens the menu).
+    const ENGINE_ARGS = ["-iwad", "doom1.wad", "-window", "-nogui", "-nomusic", "-config", "default.cfg", "-skill", "3", "-warp", "1", "1"];
 
-    const isTouch = window.matchMedia("(pointer: coarse)").matches;
+    const params = new URLSearchParams(location.search);
+    const isTouch = params.has("touch") || window.matchMedia("(pointer: coarse)").matches;
     const isEmbed = window.self !== window.top;
     if (isTouch) root.classList.add("is-touch");
 
@@ -331,6 +333,8 @@
     }
     window.addEventListener("blur", pause);
     document.addEventListener("visibilitychange", () => document.hidden && pause());
+    // iOS only unlocks audio from touchend/click, not pointerdown.
+    for (const type of ["touchend", "click"]) root.addEventListener(type, resumeAudio, { passive: true });
     root.addEventListener("pointerdown", () => {
         resumeAudio();
         if (state === "running") canvas.focus();
